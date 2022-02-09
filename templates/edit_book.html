@@ -1,0 +1,54 @@
+﻿{% extends "base_user_view.html" %}
+
+{% block right_main_head %}Sửa thông tin sách{% endblock %}
+
+{% block right_main %}
+<div class="row align-items-center justify-content-center info_page">
+    <div class="col-md-7 form">
+        <div class="form_head">
+            <h4>Sửa thông tin</h4>
+            <p>Điều chỉnh thông tin và thêm ảnh mới</p>
+        </div>
+        <form action="" method="post" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div class="input">
+                {{ form.title() }}
+                {% for error in form.title.errors %}
+                <p style="color: red;">{{ error }}</p>
+                {% endfor %}
+            </div>
+            <div class="input">
+                {{ form.author() }}
+                {% for error in form.author.errors %}
+                <p style="color: red;">{{ error }}. </p>
+                {% endfor %}
+            </div>
+            <div class="input">
+                {{ form.publishyear() }}
+                {% for error in form.publishyear.errors %}
+                <p style="color: red;">{{ error }}. </p>
+                {% endfor %}
+            </div>
+            <div class="input select_field">
+                {{ form.catalog() }}
+                {% for error in form.catalog.errors %}
+                <p style="color: red;">{{ error }}. </p>
+                {% endfor %}
+            </div>
+            <div class="input">
+                {{ form.review() }}
+                {% for error in form.review.errors %}
+                <p style="color: red;">{{ error }}. </p>
+                {% endfor %}
+            </div>
+            <div class="input">
+                {{ form.image }}
+                {% for error in form.image.errors %}
+                <p style="color: red;">{{ error }}. </p>
+                {% endfor %}
+            </div>
+            {{ form.submit() }}
+        </form>
+    </div>
+</div>
+{% endblock %}

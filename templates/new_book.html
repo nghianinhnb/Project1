@@ -1,0 +1,54 @@
+﻿{% extends "base_user_view.html" %}
+
+{% block right_main_head %}Thêm sách mới{% endblock %}
+
+{% block right_main %}
+<div class="row align-items-center justify-content-center info_page">
+    <div class="col-md-7 form">
+        <div class="form_head">
+            <h4>Sách mới</h4>
+            <p>Vui lòng nhập thông tin và chọn ít nhất một ảnh</p>
+        </div>
+        <form action="" method="post" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div class="input">
+                {{ form.title(placeholder="Tên sách") }}
+                {% for error in form.title.errors %}
+                <p style="color: red;">{{ error }}</p>
+                {% endfor %}
+            </div>
+            <div class="input">
+                {{ form.author(placeholder="Tên tác giả") }}
+                {% for error in form.author.errors %}
+                <p style="color: red;">{{ error }}. </p>
+                {% endfor %}
+            </div>
+            <div class="input">
+                {{ form.publishyear(placeholder="Năm xuất bản") }}
+                {% for error in form.publishyear.errors %}
+                <p style="color: red;">{{ error }}. </p>
+                {% endfor %}
+            </div>
+            <div class="input select_field">
+                {{ form.catalog() }}
+                {% for error in form.catalog.errors %}
+                <p style="color: red;">{{ error }}. </p>
+                {% endfor %}
+            </div>
+            <div class="input">
+                {{ form.review(placeholder="Giới thiệu về sách") }}
+                {% for error in form.review.errors %}
+                <p style="color: red;">{{ error }}. </p>
+                {% endfor %}
+            </div>
+            <div class="input">
+                {{ form.image }}
+                {% for error in form.image.errors %}
+                <p style="color: red;">{{ error }}. </p>
+                {% endfor %}
+            </div>
+            {{ form.submit() }}
+        </form>
+    </div>
+</div>
+{% endblock %}

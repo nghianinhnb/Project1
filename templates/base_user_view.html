@@ -1,0 +1,33 @@
+﻿{% extends "layout.html" %}
+
+{% block content %}
+    
+    <div class="row justify-content-center">
+        <div class="col-md-3" id='left_main'>
+            <div class='row mini_profile'>
+                <div class="col-sm-4" id='mini_avatar'>
+                    <a href=""><img src="{{current_user.get_avatar_url()}}"></a>
+                </div>
+                <div class="col-sm-8 justify-content-center" id='mini_info'>
+                    <div id='name'>{{current_user.name}}</div>
+                    <div><a href="{{url_for('user_routes.edit_profile')}}" id='edit'><i class="fas fa-pencil-alt"></i> Sửa Hồ Sơ</a></div>
+                </div>
+            </div>
+            <div id='left_menu'>
+                <ul>
+                    <li {% block profile %}{% endblock %}><a href="{{url_for('user_routes.edit_profile')}}"><i class="fas fa-user"></i><span>Tài khoản của tôi</span></a></li>
+                    <li {% block notification %}{% endblock %}><a href="{{url_for('user_routes.notification')}}"><i class="fas fa-bell"></i><span>Thông báo</span></a></li>
+                    <li {% block my_book %}{% endblock %}><a href="{{url_for('user_routes.my_book')}}"><i class="fas fa-book"></i><span>Sách của tôi</span></a></li>
+                    <li {% block following %}{% endblock %}><a href="{{url_for('user_routes.following')}}"><i class="fas fa-folder-plus"></i><span>Đang theo dõi</span></a></li>
+                    <li {% block requesting %}{% endblock %}><a href="{{url_for('user_routes.requesting')}}"><i class="fas fa-cart-plus"></i><span>Đang yêu cầu</span></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-9" id='right_main'>
+            <div class="account-head">{% block right_main_head %}{% endblock %}</div>
+            {% block right_main %}{% endblock %}
+        </div>
+    </div>
+
+{% endblock %}

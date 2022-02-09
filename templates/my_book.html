@@ -1,0 +1,121 @@
+﻿{% extends "base_user_view.html" %}
+
+{% block my_book %} class="is-active" {% endblock %}
+
+{% block right_main_head %}Quản lý sách{% endblock %}
+
+{% block right_main %}
+<div class="row info_page">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-4">
+                <p>Sách hiện có: {{len}}</p>
+            </div>
+            <div class="col-md-6"></div>
+            <div class="col-md-2">
+                <a href="/new_book"><button id="new_book">Thêm sách mới</button></a>
+            </div>
+        </div>
+    </div>
+    {% for book in books.page %}
+    <div class="col-md-12 boder_book_view">
+        <div class="row" id="book_owner_view">
+            <div class="col-md-2">
+                <a href="{{url_for('book_routes.book', bid=book.bid)}}">
+                    {% if book.photos %}
+                    <img src="{{ url_for('static',filename='/image/book_photos/') + book.photos[0] }}" />
+                    {% else %}
+                    <img src="{{url_for('static',filename='/image/no_image.jpg')}}" />
+                    {% endif %}
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{{url_for('book_routes.book', bid=book.bid)}}">{{book.title}}</a>{% if not book.available %}<span> (Đã gỡ xuống)</span>{%endif%}<br /><br />
+                <a href="{{url_for('book_routes.search_by_author', author=book.author)}}">{{book.author}}</a><br /><br />
+                <a href="{{url_for('book_routes.search_by_year', year=book.publishyear)}}">{{book.publishyear}}</a><br /><br />
+            </div>
+            <div class="col-md-4"></div>
+            <div class="col-md-2">
+                {% if not book.get_accepted_uid()%}
+                {% if book.available %}
+                <a href="{{url_for('book_routes.remove_book', bid=book.bid)}}"><button id="remove_book">Gỡ sách</button></a>
+                {% else %}
+                <a href="{{url_for('book_routes.post_book', bid=book.bid)}}"><button id="post_book">Đăng sách</button></a>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        {% with geter = book.dao.user.get_by_id(book.get_accepted_uid()) %}
+        {% if geter %}
+        <div class="col-md-12">
+            <p style="color:red;
+                        font-size:16px;
+                        text-align:center;">
+                Đã đồng ý cho <a href="" style="color:blue;">{{geter[1]}}</a> lấy, chờ xác nhận
+            </p>
+        </div>
+
+        {% else %}
+
+        {% with users = book.get_requester() %}
+        {% if users %}
+        <div class="col-md-12">
+            Yêu cầu lấy sách này:
+        </div>
+        <div class="col-md-12 requesters_box">
+            {% for user in users %}
+            <div class="row requester">
+                <div class="col-md-4"><a href="{{url_for('user_routes.user', uid=user[0])}}">{{user[1]}}</a></div>
+                <div class="col-md-2">Hà Nội</div>
+                <div class="col-md-2">Điểm: {{user[8]}}</div>
+                <div class="col-md-2">
+                    <a href="{{url_for('user_routes.accept', uid=user[0], bid=book.bid)}}"><button id="">Đồng ý</button></a>
+                </div>
+                <div class="col-md-2">
+                    <a href="{{url_for('user_routes.decline', uid=user[0], bid=book.bid)}}"><button id="">Từ chối</button></a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% endif %}
+        {% endwith %}
+    </div>
+    {% endfor %}
+
+    <div>
+        <ul id="page_nav">
+            <li><a class="page_btn" href="{{url_for('user_routes.my_book')}}?page=1"><div> << </div></a></li>
+            {% if books.pos > 1 %}
+            <li><a class="page_btn" href="{{url_for('user_routes.my_book')}}?page={{books.pos-1}}"><div> <  </div></a></li>
+            {% if books.pos > 3 %}
+            <li><a class="page_btn" href="{{url_for('user_routes.my_book')}}?page={{books.pos-3}}"><div>{{books.pos-3}}</div></a></li>
+            {% endif %}
+            {% if books.pos > 2 %}
+            <li><a class="page_btn" href="{{url_for('user_routes.my_book')}}?page={{books.pos-2}}"><div>{{books.pos-2}}</div></a></li>
+            {% endif %}
+            <li><a class="page_btn" href="{{url_for('user_routes.my_book')}}?page={{books.pos-1}}"><div>{{books.pos-1}}</div></a></li>
+            {% endif %}
+
+            <li><a class="page_btn active" href="{{url_for('user_routes.my_book')}}?page={{books.pos}}"><div>{{books.pos}}</div></a></li>
+
+            {% if books.pos < books.size %}
+            <li><a class="page_btn" href="{{url_for('user_routes.my_book')}}?page={{books.pos+1}}"><div>{{books.pos+1}}</div></a></li>
+            {% if books.pos+1 < books.size %}
+            <li><a class="page_btn" href="{{url_for('user_routes.my_book')}}?page={{books.pos+2}}"><div>{{books.pos+2}}</div></a></li>
+            {% endif %}
+            {% if books.pos+2 < books.size %}
+            <li><a class="page_btn" href="{{url_for('user_routes.my_book')}}?page={{books.pos+3}}"><div>{{books.pos+3}}</div></a></li>
+            {% endif %}
+            <li><a class="page_btn" href="{{url_for('user_routes.my_book')}}?page={{books.pos+1}}"><div> >  </div></a></li>
+            {% endif %}
+            <li><a class="page_btn" href="{{url_for('user_routes.my_book')}}?page={{books.size}}"><div> >> </div></a></li>
+        </ul>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,332 @@
+﻿{% extends "base_user_view.html" %}
+
+{% block content %}
+<div class="row justify-content-center" id="book_view">
+    <div class="col-md-4">
+        <div id="book_slideshow">
+            <div class="slideshow-container">
+                {% for photo in book.photos %}
+                <div class="mySlides" style="text-align:center">
+                    <div class="numbertext">{{loop.index}} / {{loop.length}}</div>
+                    <img src="{{url_for('static',filename='/image/book_photos/') + photo}}" style="max-height:500px; max-width:390px">
+                    {% if current_user.id == book.uid %}
+                    <div class="text">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href=""><i class="fas fa-ellipsis-h"></i></a>
+                        <div class="dropdown-menu">
+                            <a class="nav-link" href="{{url_for('book_routes.set_cover', bid=book.bid, photo=photo)}}">Đặt làm ảnh bìa sách</a>
+                            <a class="nav-link" href="{{url_for('book_routes.delete_photo', bid=book.bid, photo=photo)}}">Xóa ảnh</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                <a class="next" onclick="plusSlides(1)">&#10095;</a>
+            </div>
+            <br>
+
+            <div style="text-align:center">
+                {% for photo in book.photos %}
+                <span class="dot" onclick={{"currentSlide({})".format(loop.index)}}></span>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="row book_btn">
+            {% if current_user.id == book.uid %}
+            {% if book.available %}
+            <div class="col-sm-6" style="text-align:center;">
+                <a href="{{url_for('book_routes.remove_book', bid=book.bid, next=url_for('book_routes.book',bid=book.bid) )}}"><button class="btn btn-danger">Gỡ sách</button></a>
+            </div>
+            {% else %}
+            <div class="col-sm-6" style="text-align:center;">
+                <a href="{{url_for('book_routes.post_book', bid=book.bid, next=url_for('book_routes.book',bid=book.bid) )}}"><button class="btn btn-success">Đăng sách</button></a>
+            </div>
+            {% endif %}
+            <div class="col-sm-6" style="text-align:center;">
+                <a href="{{url_for('book_routes.edit_book', bid=book.bid)}}"><button class="btn btn-primary">Sửa thông tin sách</button></a>
+            </div>
+            {% else %}
+            {% if current_user.id in book.get_requester_id() %}
+            <div class="col-sm-6" style="text-align:center;">
+                <a href="{{url_for('book_routes.cancel_request', bid=book.bid)}}"><button class="btn btn-danger">Hủy yêu cầu</button></a>
+            </div>
+            {% else %}
+            <div class="col-sm-6" style="text-align:center;">
+                <a href="{{url_for('book_routes.request_book', bid=book.bid)}}"><button class="btn btn-success" {%if not book.available%}disabled{%endif%}>Yêu cầu</button></a>
+            </div>
+            {% endif %}
+            {% if current_user.id in book.get_follower_id() %}
+            <div class="col-sm-6" style="text-align:center;">
+                <a href="{{url_for('book_routes.unfollow', bid=book.bid)}}"><button class="btn btn-primary">Bỏ theo dõi</button></a>
+            </div>
+            {% else %}
+            <div class="col-sm-6" style="text-align:center;">
+                <a href="{{url_for('book_routes.follow', bid=book.bid)}}"><button class="btn btn-primary">Theo dõi</button></a>
+            </div>
+            {% endif %}
+            {% endif %}
+
+
+        </div>
+    </div>
+    <div class="col-md-5 book_info">
+        <span>Tên cuốn sách: </span><a href="{{url_for('book_routes.book', bid=book.bid)}}">{{book.title}}</a>{% if not book.available %}<span> (Đã gỡ xuống)</span>{%endif%}<br />
+        <span>Tác giả: </span><a href="{{url_for('book_routes.search_by_author', author=book.author)}}">{{book.author}}</a><br />
+        <span>Năm xuất bản: </span><a href="{{url_for('book_routes.search_by_year', year=book.publishyear)}}">{{book.publishyear}}</a><br />
+        <span>Thể loại: </span><a href="{{url_for('book_routes.search_by_catalog', catalog=book.catalog)}}">{{book.catalog}}</a><br /><br />
+        {% if book.review %}
+        <h5>Giới thiệu:</h5>
+        <p>{{book.review}}</p>
+        {% endif %}
+    </div>
+    <div class="col-md-3" style="border-left: 1px solid rgb(230,230,230)">
+        <div class="row">
+            <div class="col-sm-4" id="owner_avt">
+                <img src="{{Owner.get_avatar_url()}}">
+                <span class="status_dot"></span>
+            </div>
+            <div class="col-sm-8 nopad">
+                <div class="col-md-12 nopad" id="owner_name">{{Owner.name}}</div>
+                <div class="col-md-12 nopad"><span id="owner_status"></span></div>
+            </div>
+            <div class="col-sm-12" style="margin-top:15px;"></div>
+            <div class="col-sm-12 owner_header">Tham gia từ: 
+                <span>{{Owner.create_at.strftime("%d")}}-{{Owner.create_at.strftime("%m")}}-{{Owner.create_at.strftime("%Y")}}</span>
+            </div>
+            <div class="col-sm-12 owner_header">Số sách hiện có: 
+                <span>{{Owner.get_my_books()|length}} cuốn</span>
+            </div>
+            <div class="col-sm-12 owner_header">Tiểu sử:</div>
+            <div class="col-sm-12 owner_value">{{Owner.bio}}</div>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}
+
+
+{% block second_main %}
+<div class="col-md-12" style="margin-top:40px;">
+    <h3>Bình luận: </h3>
+</div>
+<div class="row comment_box">
+    <div class="col-md-12" style="margin-bottom:30px;">
+        {% if current_user.is_authenticated %}
+        <div contentEditable=true data-text="Nhập bình luận..." id="comment"></div>
+        <button id="send_cmt" class="btn btn-primary">Gửi</button>
+        <div id="list_tag"></div>
+        {% else %}
+        <div align="center">
+            <p style="color:red; margin: 20px 0px 30px 0px;">Bạn phải <a href="{{url_for('user_routes.login', next=url_for('book_routes.book', bid=book.bid))}}">đăng nhập</a> để có thể bình luận</p>
+        </div>
+        {% endif %}
+        <div id="typing"></div>
+    </div>
+
+    <div id="cmt_list">
+
+    </div>
+
+</div>
+{% endblock %}
+
+
+{% block script %}
+<script>
+    var slideIndex = 1;
+    showSlides(slideIndex);
+
+    function plusSlides(n) {
+        showSlides(slideIndex += n);
+    }
+
+    function currentSlide(n) {
+        showSlides(slideIndex = n);
+    }
+
+    function showSlides(n) {
+        var i;
+        var slides = document.getElementsByClassName("mySlides");
+        var dots = document.getElementsByClassName("dot");
+        if (n > slides.length) { slideIndex = 1 }
+        if (n < 1) { slideIndex = slides.length }
+        for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+        for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(" active", "");
+        }
+        slides[slideIndex - 1].style.display = "block";
+        dots[slideIndex - 1].className += " active";
+    }
+</script>
+<script>
+    $(document).ready(function () {
+                $.ajax({
+                    method: "post",
+                    url: "{{url_for('user_routes.get_status')}}",
+                    data: { uid: {{ Owner.id }} },
+                    success: function (res) {
+                        $(".status_dot").empty();
+                        $(".status_dot").html(res['dot']);
+                        $("#owner_status").text(res['status']);
+                    }
+                })
+        });
+</script>
+<script>
+    $(document).ready(function loop() {
+                setTimeout(function () {
+                    $.ajax({
+                        method: "post",
+                        url: "{{url_for('user_routes.get_status')}}",
+                        data: { uid: {{ Owner.id }} },
+                        success: function (res) {
+                            $(".status_dot").empty();
+                            $(".status_dot").html(res['dot']);
+                            $("#owner_status").text(res['status']);
+                            loop();
+                        }
+                    })
+                }, 7500);
+        });
+</script>
+
+<script>
+    $(document).ready(function () {
+                $.ajax({
+                    method: "post",
+                    url: "{{url_for('book_routes.get_comments', bid=book.bid)}}",
+                    success: function (res) {
+                        $.each(res, function (index, json) {
+                            $("#cmt_list").append(
+                                '<div class="row" style="margin-bottom:50px;"> \
+                                    <div class="col-md-1 cmt_avt"><img src="/static/image/user_avatar/'+ json['avatar'] + '"></div> \
+                                    <div class="col-md-11"> \
+                                        <div class="col-md-12 cmt_name">'+ json['name'] + ' <span>' + json['time'] + '</span></div> \
+                                        <div class="col-md-12 cmt_text">'+ json['text'] + '</div> \
+                                    </div>\
+                                </div>'
+                            );
+                        });
+                    }
+                });
+        });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        var socket = io.connect('http://127.0.0.1:5000');
+
+        socket.on('message', function (json) {
+            console.log('Received message');
+            if (json['bid'] == {{book.bid}})
+                $("#cmt_list").prepend(
+                    '<div class="row" style="margin-bottom:50px;"> \
+                        <div class="col-md-1 cmt_avt"><img src="/static/image/user_avatar/'+ json['avatar'] +'"></div> \
+                        <div class="col-md-11"> \
+                            <div class="col-md-12 cmt_name">'+ json['name'] + ' <span>'+json['time']+'</span></div> \
+                            <div class="col-md-12 cmt_text">'+ json['text'] +'</div> \
+                        </div>\
+                    </div>'
+                );
+        });
+
+        $('#send_cmt').on('click', function () {
+            socket.send({ text: document.getElementById('comment').innerHTML, avatar: '{{current_user.avatar}}', name: '{{current_user.name}}', bid: '{{book.bid}}' });
+            
+            $.ajax({
+                method: "post",
+                url: "{{url_for('book_routes.book', bid=book.bid)}}",
+                data: { text: document.getElementById('comment').innerHTML, uid:'{{current_user.id}}' },
+                success: function (res) {
+                }
+             })
+            $('#comment').text('');
+        });
+
+        $('#comment').on('keyup', function (e) {
+            if (e.which == 13) {
+                socket.send({ text: document.getElementById('comment').innerHTML, avatar: '{{current_user.avatar}}', name: '{{current_user.name}}', bid: '{{book.bid}}' });
+                $.ajax({
+                    method: "post",
+                    url: "{{url_for('book_routes.book', bid=book.bid)}}",
+                    data: { text: document.getElementById('comment').innerHTML, uid: '{{current_user.id}}' },
+                    success: function (res) {
+                    }
+                })
+                $('#comment').text('');
+            }
+        });
+
+        {% if current_user.is_authenticated %}
+        var is_tagging = false;
+        var cmt_text = ''
+        $('#comment').on('keydown', function (e) {
+            if (e.which != 13) {
+                socket.emit('typing', { uid: {{current_user.id}}, bid: {{book.bid}} } );
+            }
+            
+            if (is_tagging) {
+                $("#list_tag").empty();
+                $.ajax({
+                    method: "post",
+                    url: "{{url_for('user_routes.tag')}}",
+                    data: { text: document.getElementById('comment').innerHTML },
+                    success: function (res) {
+                        var data = '<ul>';
+                        $.each(res['list'], function (index, value) {
+                            data += "<a class='tag'><li><img src='/static/image/user_avatar/"+value[6]+"'>" + value[1] + "</li></a>";
+                        });
+                        data += '</ul>'
+                        $("#list_tag").html(data);
+                        cmt_text = res['text'];
+                        var tag_elements = document.getElementsByClassName("tag");
+                        for (i = 0; i < tag_elements.length; i++) {
+                            tag_elements[i].addEventListener("click", function () {
+                                var newElement = document.createElement('a');
+                                newElement.href = '#';
+                                newElement.innerHTML = this.text;
+                                $('#comment').text(cmt_text);
+                                document.getElementById('comment').appendChild(newElement);
+                                is_tagging = false;
+                                $("#list_tag").empty();
+                                $.ajax({
+                                    method: "post",
+                                    url: "{{url_for('user_routes.tagged_notif')}}",
+                                    data: { name: this.text, bid: {{book.bid}} },
+                                    success: function (res) {
+                                    }
+                                });      
+                            });
+                        }
+                    }
+                })
+            }
+            if (e.key == '@') {
+                is_tagging = true;
+            }
+            if (e.which == 32) {
+                is_tagging = false;
+                $("#list_tag").empty();
+            }
+        });
+        {% endif %}
+         
+        var typingTimeout;
+        socket.on('typing', function (json) {
+            if (json['bid'] == {{book.bid}} && json['uid'] != {{current_user.id or 0}})
+                $('#typing').text('Ai đó đang nhập bình luận...')
+                if (typingTimeout != undefined) clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(callScript, 700);
+        });
+        function callScript() {
+            $('#typing').text('')
+        }
+    });
+</script>
+
+{% endblock %}
+

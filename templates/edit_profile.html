@@ -1,0 +1,87 @@
+﻿{% extends "base_user_view.html" %}
+
+{% block profile %} class="is-active" {% endblock %}
+
+{% block right_main_head %}Thông tin tài khoản{% endblock %}
+
+
+{% block right_main %}
+    <div class="info_page row  justify-content-center">
+        <div class="left col-md-7 form">
+            <span class="info-title">Thông tin cá nhân</span>
+            <div class="info_container">
+                <form action="" method="post">
+                    {{ form.hidden_tag() }}
+                    <div class="input">
+                        {{ form.name() }}
+                        {% for error in form.name.errors %}
+                        <p style="color: red;">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="input">
+                        {{ form.date_of_birth() }}
+                        {% for error in form.date_of_birth.errors %}
+                        <p style="color: red;">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="input">
+                        {{ form.gender() }}
+                        {% for error in form.gender.errors %}
+                        <p style="color: red;">{{ error }}. </p>
+                        {% endfor %}
+                    </div>
+                    <div class="input">
+                        {{ form.bio() }}
+                        {% for error in form.bio.errors %}
+                        <p style="color: red;">{{ error }}. </p>
+                        {% endfor %}
+                    </div>
+                    <div id="edit_submit">{{ form.submit1() }}</div>
+                </form>
+            </div>
+        </div>
+
+        <div class="right col-md-5">
+            <div class="row justify-content-center">
+                <div align="center" class="col-md-8" id="avatar">
+                    <img src="{{current_user.get_avatar_url()}}" />
+                    <form action="" method="post" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        {{ upload_avatar.image }}
+                        {% for error in upload_avatar.image.errors %}
+                        <p style="color: red;">{{ error }}. </p>
+                        {% endfor %}
+                        {{ upload_avatar.submit2() }}
+                    </form>
+                    <div id="remind">
+                        <div class="note">Định dạng: JPG, PNG, JPEG</div>
+                    </div>
+                </div>
+            </div>
+            <div id="about">
+                <span class="info-title">Về tôi</span>
+                <div class="row list-item">
+                    <span style="margin-left:30px;">Điểm: {{current_user.point}}</span>
+                </div>
+                <span class="info-title">Bảo mật</span>
+                <div class="row list-item">
+                    <div class="col-md-8">
+                        <i class="fas fa-lock"></i><span>Đổi mật khẩu</span>
+                    </div>
+                    <div class="col-md-4 status">
+                        <a href="{{ url_for('user_routes.change_password') }}"><button class="button active">Cập nhật</button></a>
+                    </div>
+                </div>
+                <div class="row list-item">
+                    <div class="col-md-8">
+                        <i class="fas fa-user-alt-slash"></i><span>Hủy kích hoạt tài khoản</span>
+                    </div>
+                    <div class="col-md-4 status">
+                        <a href="{{ url_for('user_routes.deactive_account') }}"><button class="button active">Cập nhật</button></a>
+                    </div>
+                </div>
+            </div>
+            </div>
+    </div>
+{% endblock %}
+    

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+    <input type="text" id = "livebox">
+    <p id = "datalist"></p>
+</body>
+<script>
+    $(document).ready(function(){
+        $("#search_box input").on("input",function(e){
+            $("#search_list").empty();
+            $.ajax({
+                method:"post",
+                url:"{{url_for('book_routes.live_search')}}",
+                data:{text:$("#search_box input").val()},
+                success:function(res){
+                    var data = "<ul>";
+                    $.each(res,function(index,value){
+                        data += "<li>"+value.word_eng+"</li>";
+                    });
+                    data += "</ul>";
+                    $("#search_list").html(data);
+                }
+            });
+        });
+    });
+</script>
+</html>

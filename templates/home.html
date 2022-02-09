@@ -1,0 +1,79 @@
+﻿{% extends "layout.html" %}
+
+{% block content %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-3">
+            <div id="left_home">
+                <h2>DANH MỤC</h2>
+                <div>
+                    <ul>
+                        <li><a href=""><div>Sách mới</div></a></li>
+                        <li><a href=""><div>Sách hot!</div></a></li>
+                        <li><a href=""><div>Gợi ý cho bạn</div></a></li>
+                        <li><a href=""><div>Gần bạn</div></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-9" id="right_home">
+            <div class="row">
+                {% for book in books.page %}
+                <div class="col-md-4 col-sm-6 home_book">
+                    <div class={% if book[6]%} "book_box" {%else%} "book_box unavailable" {%endif%}>
+                        <div align="center">
+                            <a href="{{url_for('book_routes.book', bid=book[0])}}">
+                                {% with photo = bookDAO.get_photos(book[0])%}
+                                {% if photo %}
+                                <img src="{{url_for('static',filename='/image/book_photos/') + photo[0]}}" />
+                                {% else %}
+                                <img src="{{url_for('static',filename='/image/no_image.jpg')}}" />
+                                {% endif %}
+                                {% endwith %}
+                            </a>
+                        </div>
+                        <h2 align="center"><a href="{{url_for('book_routes.book', bid=book[0])}}">{{book[1]}}{% if not book[6]%}<span> (Đã gỡ xuống)</span>{%endif%}</a></h2>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if books.page %}
+            <div align="center">
+                <ul id="page_nav">
+                    <li><a class="page_btn" href="{{this_url + 'page={}'.format(1)}}"><div> << </div></a></li>
+                    {% if books.pos > 1 %}
+                    <li><a class="page_btn" href="{{this_url + 'page={}'.format(books.pos-1)}}"><div> <  </div></a></li>
+                    {% if books.pos > 3 %}
+                    <li><a class="page_btn" href="{{this_url + 'page={}'.format(books.pos-3)}}"><div>{{books.pos-3}}</div></a></li>
+                    {% endif %}
+                    {% if books.pos > 2 %}
+                    <li><a class="page_btn" href="{{this_url + 'page={}'.format(books.pos-2)}}"><div>{{books.pos-2}}</div></a></li>
+                    {% endif %}
+                    <li><a class="page_btn" href="{{this_url + 'page={}'.format(books.pos-1)}}"><div>{{books.pos-1}}</div></a></li>
+                    {% endif %}
+
+                    <li><a class="page_btn active" href="{{this_url + 'page={}'.format(books.pos)}}"><div>{{books.pos}}</div></a></li>
+
+                    {% if books.pos < books.size %}
+                    <li><a class="page_btn" href="{{this_url + 'page={}'.format(books.pos+1)}}"><div>{{books.pos+1}}</div></a></li>
+                    {% if books.pos+1 < books.size %}
+                    <li><a class="page_btn" href="{{this_url + 'page={}'.format(books.pos+2)}}"><div>{{books.pos+2}}</div></a></li>
+                    {% endif %}
+                    {% if books.pos+2 < books.size %}
+                    <li><a class="page_btn" href="{{this_url + 'page={}'.format(books.pos+3)}}"><div>{{books.pos+3}}</div></a></li>
+                    {% endif %}
+                    <li><a class="page_btn" href="{{this_url + 'page={}'.format(books.pos+1)}}"><div> >  </div></a></li>
+                    {% endif %}
+                    <li><a class="page_btn" href="{{this_url + 'page={}'.format(books.size)}}"><div> >> </div></a></li>
+                </ul>
+            </div>
+            {% else %}
+            Không tìm thấy kết quả nào.
+            {% endif %}
+        </div>
+    </div>
+    
+{% endblock %}

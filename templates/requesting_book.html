@@ -1,0 +1,87 @@
+﻿{% extends "base_user_view.html" %}
+
+{% block requesting %} class="is-active" {% endblock %}
+
+{% block right_main_head %}Chờ đồng ý lấy sách{% endblock %}
+
+{% block right_main %}
+<div class="row info_page">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-4">
+                <p>Số yêu cầu: {{len}}</p>
+            </div>
+            <div class="col-md-6"></div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+    {% for book in books.page %}
+    <div class="col-md-12 boder_book_view">
+        <div class="row" id="book_owner_view">
+            <div class="col-md-2">
+                <a href="{{url_for('book_routes.book', bid=book.bid)}}">
+                    {% if book.photos %}
+                    <img src="{{ url_for('static',filename='/image/book_photos/') + book.photos[0] }}" />
+                    {% else %}
+                    <img src="{{url_for('static',filename='/image/no_image.jpg')}}" />
+                    {% endif %}
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{{url_for('book_routes.book', bid=book.bid)}}">{{book.title}}</a>{% if not book.available %}<span> (Đã gỡ xuống)</span>{%endif%}<br /><br />
+                <a href="{{url_for('book_routes.search_by_author', author=book.author)}}">{{book.author}}</a><br /><br />
+                <a href="{{url_for('book_routes.search_by_year', year=book.publishyear)}}">{{book.publishyear}}</a><br /><br />
+            </div>
+            {% if current_user.id == book.get_accepted_uid() %}
+            <div class="col-md-2"></div>
+            <div class="col-md-2" style="text-align:center;">
+                <a href="{{url_for('user_routes.confirm', bid=book.bid)}}"><button class="btn btn-success">Xác nhận đã lấy</button></a>
+            </div>
+            <div class="col-md-2" style="text-align:center;">
+                <a href="{{url_for('user_routes.unconfirm', bid=book.bid)}}"><button class="btn btn-danger">Không xác nhận</button></a>
+            </div>
+            {% else %}
+            <div class="col-md-4"></div>
+            <div class="col-md-2" style="text-align:center;">
+                <a href="{{url_for('book_routes.cancel_request', bid=book.bid)}}"><button class="btn btn-danger" style="font-size:16px">Hủy yêu cầu</button></a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if books.size %}
+    <div>
+        <ul id="page_nav">
+            <li><a class="page_btn" href="{{url_for('user_routes.requesting', page=1)}}"><div> << </div></a></li>
+            {% if books.pos > 1 %}
+            <li><a class="page_btn" href="{{url_for('user_routes.requesting', page=books.pos-1)}}"><div> <  </div></a></li>
+            {% if books.pos > 3 %}
+            <li><a class="page_btn" href="{{url_for('user_routes.requesting', page=books.pos-3)}}"><div>{{books.pos-3}}</div></a></li>
+            {% endif %}
+            {% if books.pos > 2 %}
+            <li><a class="page_btn" href="{{url_for('user_routes.requesting', page=books.pos-2)}}"><div>{{books.pos-2}}</div></a></li>
+            {% endif %}
+            <li><a class="page_btn" href="{{url_for('user_routes.requesting', page=books.pos-1)}}"><div>{{books.pos-1}}</div></a></li>
+            {% endif %}
+
+            <li><a class="page_btn active" href="{{url_for('user_routes.requesting', page=books.pos)}}"><div>{{books.pos}}</div></a></li>
+
+            {% if books.pos < books.size %}
+            <li><a class="page_btn" href="{{url_for('user_routes.requesting', page=books.pos+1)}}"><div>{{books.pos+1}}</div></a></li>
+            {% if books.pos+1 < books.size %}
+            <li><a class="page_btn" href="{{url_for('user_routes.requesting', page=books.pos+2)}}"><div>{{books.pos+2}}</div></a></li>
+            {% endif %}
+            {% if books.pos+2 < books.size %}
+            <li><a class="page_btn" href="{{url_for('user_routes.requesting', page=books.pos+3)}}"><div>{{books.pos+3}}</div></a></li>
+            {% endif %}
+            <li><a class="page_btn" href="{{url_for('user_routes.requesting', page=books.pos+1)}}"><div> >  </div></a></li>
+            {% endif %}
+            <li><a class="page_btn" href="{{url_for('user_routes.requesting', page=books.size)}}"><div> >> </div></a></li>
+        </ul>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

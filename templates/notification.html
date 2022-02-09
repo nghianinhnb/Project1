@@ -1,0 +1,111 @@
+﻿{% extends "base_user_view.html" %}
+
+{% block notification %} class="is-active" {% endblock %}
+
+{% block right_main_head %}Thông báo của tôi{% endblock %}
+
+{% block right_main %}
+<div class="info_page row  justify-content-center">
+    <div class="col-md-12" id="list_notif">
+
+    </div>
+</div>
+{% endblock %}
+
+
+
+{% block script %}
+<script>
+    $(document).ready(function loop() {
+                $.ajax({
+                    method: "post",
+                    url: "{{url_for('user_routes.get_notification')}}",
+                    data: { uid: {{current_user.id}} },
+                    success: function (res) {
+                        $.each(res, function (index, json) {
+                            if (json[3] == 1) {
+                                $("#list_notif").append(
+                                    '<div class="row unseen" id="'+json[0]+'" style="margin-bottom:10px;"> \
+                                        <div class="col-md-1"><i class="fas fa-comment-dots"></i></div> \
+                                        <div class="col-md-11 notif"> \
+                                            '+ json[2] + ' \
+                                        </div>\
+                                    </div>'
+                                );
+                                var id = json[0]
+                                document.getElementById(id).addEventListener("click", function () {
+                                    this.classList.remove("unseen")
+                                    $.ajax({
+                                        method: "post",
+                                        url: "{{url_for('user_routes.seen')}}",
+                                        data: { nid: json[0] },
+                                        success: function (res) {
+                                        }
+                                    });
+                                });
+                            }
+                            else {
+                                $("#list_notif").append(
+                                    '<div class="row" style="margin-bottom:10px;"> \
+                                        <div class="col-md-1"><i class="fas fa-comment-dots"></i></div> \
+                                        <div class="col-md-11 notif"> \
+                                            '+ json[2] + ' \
+                                        </div>\
+                                    </div>'
+                                );
+                            }
+                            
+                        });
+                    }
+                });
+        });
+</script>
+<script>
+    $(document).ready(function loop() {
+        setTimeout(function () {
+                $.ajax({
+                    method: "post",
+                    url: "{{url_for('user_routes.get_notification')}}",
+                    data: { uid: {{current_user.id}} },
+                    success: function (res) {
+                        $("#list_notif").empty();
+                        $.each(res, function (index, json) {
+                            if (json[3] == 1) {
+                                $("#list_notif").append(
+                                    '<div class="row unseen" id="'+json[0]+'" style="margin-bottom:10px;"> \
+                                        <div class="col-md-1"><i class="fas fa-comment-dots"></i></div> \
+                                        <div class="col-md-11 notif"> \
+                                            '+ json[2] + ' \
+                                        </div>\
+                                    </div>'
+                                );
+                                var id = json[0]
+                                document.getElementById(id).addEventListener("click", function () {
+                                    this.classList.remove("unseen")
+                                    $.ajax({
+                                        method: "post",
+                                        url: "{{url_for('user_routes.seen')}}",
+                                        data: { nid: json[0] },
+                                        success: function (res) {
+                                        }
+                                    });
+                                });
+                            }
+                            else {
+                                $("#list_notif").append(
+                                    '<div class="row" style="margin-bottom:10px;"> \
+                                        <div class="col-md-1"><i class="fas fa-comment-dots"></i></div> \
+                                        <div class="col-md-11 notif"> \
+                                            '+ json[2] + ' \
+                                        </div>\
+                                    </div>'
+                                );
+                            }
+                        });
+                        loop();
+                    }
+                });
+            }, 6000);
+        });
+</script>
+{% endblock %}
